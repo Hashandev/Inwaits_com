@@ -26,11 +26,6 @@ export const testimonials: Testimonial[] = [
       "Highly recommended their service to those who are waiting to get their service. They created a nice website for me, dumindabandara.lk.",
   },
   {
-    // TODO: check the spelling of the name
-    name: "Combined Maths with Madhushan Neranjan",
-    quote: "Great Service Recommended.",
-  },
-  {
     name: "Sasindu D. Pattidura",
     quote:
       "Don't hesitate to get your work done with them, they do an amazing job! Highly recommended.",
