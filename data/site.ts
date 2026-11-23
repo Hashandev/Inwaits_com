@@ -49,7 +49,7 @@ export type SiteConfig = {
       full: string;
     };
     mapEmbedUrl: string;
-    hours: WorkingHours[];
+    hours?: WorkingHours[];
   };
   nav: NavLink[];
   cta: { label: string; href: string };
@@ -91,12 +91,6 @@ export const site: SiteConfig = {
     },
     mapEmbedUrl:
       "https://www.google.com/maps?q=149%2F12+Bandaranayaka+Mawatha,+Ratnapura,+Sri+Lanka&output=embed",
-    // TODO: confirm your real working hours
-    hours: [
-      { days: "Monday – Friday", hours: "9:00 AM – 6:00 PM" },
-      { days: "Saturday", hours: "9:00 AM – 1:00 PM" },
-      { days: "Sunday & Poya days", hours: "Closed" },
-    ],
   },
   // The home page is one long page. Each link scrolls to its section, in this order.
   nav: [

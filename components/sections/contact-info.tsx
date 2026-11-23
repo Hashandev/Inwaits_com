@@ -44,18 +44,6 @@ export function ContactInfo({ className }: { className?: string }) {
           </li>
         ))}
       </ul>
-
-      <div className="mt-6">
-        <p className="text-sm text-text-muted">Working hours</p>
-        <dl className="mt-3 space-y-1.5 text-sm">
-          {contact.hours.map((row) => (
-            <div key={row.days} className="flex justify-between gap-4">
-              <dt className="text-text">{row.days}</dt>
-              <dd className="text-text-muted">{row.hours}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
     </div>
   );
 }
