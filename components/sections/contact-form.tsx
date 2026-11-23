@@ -174,7 +174,7 @@ export function ContactForm() {
             id="company"
             name="company"
             autoComplete="organization"
-            placeholder="Your business or class"
+            placeholder="Your business or company"
             className={fieldClass}
             onChange={() => clearError("company")}
             {...a11y("company")}
