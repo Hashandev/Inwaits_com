@@ -2,7 +2,7 @@
 // Home page hero with blue ambient glow, background grid and trust badges.
 
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
 import { hero } from "@/data/hero";
@@ -56,22 +56,6 @@ export function Hero() {
               />
             </Link>
           </Button>
-        </div>
-
-        {/* 3 Trust Badges */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8 animate-fade-up text-sm text-text-muted [animation-delay:160ms]">
-          <div className="flex items-center gap-2">
-            <Check className="size-4 text-accent" strokeWidth={2.5} />
-            <span>Free consultation</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Check className="size-4 text-accent" strokeWidth={2.5} />
-            <span>Local support</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Check className="size-4 text-accent" strokeWidth={2.5} />
-            <span>Fast delivery</span>
-          </div>
         </div>
       </div>
     </section>
