@@ -1,26 +1,250 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/* The site is dark-only. <html class="dark"> keeps shadcn's `dark:` styles on. */
+@custom-variant dark (&:is(.dark *));
+
+/* ──────────────────────────────────────────────────────────────
+   1. Brand tokens: edit colours here
+      Quiet navy surfaces, one brand blue used rarely (primary
+      action, selection, the hero's key words), and the green logo
+      dot as the small signature on section labels.
+   ────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #05061a; /* main page background (deep navy) */
+  --bg-soft: #0a0e2a; /* alternate section background */
+  --card: #0e1335; /* cards, form inputs */
+  --border: #1e2550; /* hairlines on cards and inputs */
+  --border-strong: #2c356e; /* hairline on hover */
+  --primary: #1530ff; /* brand blue: primary buttons, selection */
+  --primary-hover: #2e47ff; /* button hover */
+  --primary-ink: #4359ff; /* brand blue for large headline words (readable on navy) */
+  --primary-light: #6c7bff; /* brand blue for small text links on navy */
+  --accent: #4ade3a; /* logo-dot green: the signature dot only */
+  --text: #ffffff; /* primary text, headings */
+  --text-muted: #a3a9c9; /* secondary text, paragraphs */
+  --text-dim: #7a80a8; /* muted text: meta, captions, icons */
+
+  /* shadcn/ui tokens, mapped onto the brand so its components match */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card-foreground: var(--text);
+  --popover: var(--card);
+  --popover-foreground: var(--text);
+  --primary-foreground: #ffffff;
+  --secondary: #141a45;
+  --secondary-foreground: var(--text);
+  --muted: #141a45;
+  --muted-foreground: var(--text-muted);
+  --accent-foreground: var(--bg);
+  --destructive: #e5484d;
+  --input: var(--border);
+  --ring: var(--primary-light);
+  --radius: 0.625rem;
 }
 
+/* ──────────────────────────────────────────────────────────────
+   2. Tailwind theme: exposes tokens as utilities
+      bg-bg, bg-bg-soft, bg-card, border-border, bg-primary,
+      text-primary-ink, text-primary-light, text-text,
+      text-text-muted, text-text-dim …
+   ────────────────────────────────────────────────────────────── */
 @theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-light: var(--primary-light);
+  --color-accent: var(--accent);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+
+  /* shadcn/ui colour names */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Fonts (loaded with next/font in app/layout.tsx) */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), var(--font-geist-sans), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Radius scale: tags 6, controls 10, cards 16, panels 20 */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+  --radius-4xl: 1.5rem;
+
+  /* One easing curve for the whole site */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Animations */
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-progress: progress-fill 7s linear forwards;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50% - var(--marquee-gap, 0px) / 2));
+    }
+  }
+  @keyframes progress-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ──────────────────────────────────────────────────────────────
+   3. Base styles
+   ────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem; /* keeps anchor targets clear of the fixed navbar */
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-bg text-text-muted antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Hierarchy comes from size and colour; large headings tighten their own tracking */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold text-text;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: rgba(21, 48, 255, 0.55);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   4. Reusable utilities
+   ────────────────────────────────────────────────────────────── */
+
+/* Page container: max-w-7xl with responsive side padding */
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Standard vertical rhythm for sections */
+@utility section-y {
+  padding-block: 6rem;
+  @media (width >= 48rem) {
+    padding-block: 8rem;
+  }
+}
+
+/* Card: 16px radius, hairline border, one flat surface step (no glow) */
+@utility card-surface {
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+/* Card hover: the hairline brightens a little. Nothing moves or glows. */
+@utility card-hover {
+  transition:
+    border-color 160ms var(--ease-out),
+    background-color 160ms var(--ease-out);
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--border-strong);
+    }
+  }
+}
+
+/* Hide scrollbars but keep scrolling (tab bars, carousels) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   5. Reduced motion: stop CSS animations and smooth scrolling.
+      Motion (motion/react) animations are handled by <MotionProvider>.
+   ────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
