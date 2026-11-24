@@ -26,13 +26,13 @@ export default function HomePage() {
       <div id="about" data-nav-section>
         <About />
         <Stats />
-        <Testimonials />
       </div>
 
       <div id="services" data-nav-section>
         <Services />
         <Process />
         <TechStack />
+        <Testimonials />
       </div>
 
       <div id="contact" data-nav-section>

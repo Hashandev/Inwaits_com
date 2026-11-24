@@ -1,11 +1,13 @@
+"use client";
+
 // components/sections/hero.tsx
-// Home page hero with blue ambient glow and 3D perspective square grid with etechamila mouse deflection & zoom.
+// Home page hero with blue ambient glow and 3D perspective curved grid with interactive mouse hover zoom.
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
-import { PerspectiveGridWave } from "@/components/ui/perspective-grid-wave";
+import { PerspectiveCurveGrid } from "@/components/ui/perspective-curve-grid";
 import { hero } from "@/data/hero";
 
 export function Hero() {
@@ -14,19 +16,19 @@ export function Hero() {
       aria-labelledby="hero-title"
       className="relative flex min-h-[92svh] items-center pt-28 pb-36 md:pt-36 md:pb-44 overflow-hidden"
     >
-      {/* Background Glow & 3D Interactive Grid Squares */}
+      {/* Background Glow & 3D Curved Perspective Grid */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        {/* Soft radial blue ambient glow */}
-        <div className="absolute -top-32 left-1/2 -z-10 h-[850px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_70%_at_50%_30%,rgba(21,48,255,0.48)_0%,rgba(21,48,255,0.15)_50%,transparent_80%)]" />
+        {/* Soft radial blue ambient glow focused at the top */}
+        <div className="absolute -top-32 left-1/2 -z-10 h-[720px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_65%_at_50%_25%,rgba(21,48,255,0.45)_0%,rgba(21,48,255,0.12)_45%,transparent_75%)]" />
 
-        {/* 3D Perspective Grid with Mouse Hover Zoom & Wave */}
-        <PerspectiveGridWave />
+        {/* 3D Perspective Swooping Grid that curves under the headline and buttons */}
+        <PerspectiveCurveGrid />
 
-        {/* Bottom smooth fade to merge hero into the next section */}
-        <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
+        {/* Deep dark fade under the buttons exactly matching your reference photo */}
+        <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-bg via-bg/90 to-transparent pointer-events-none" />
       </div>
 
       <div className="container-page flex flex-col items-center text-center">

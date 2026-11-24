@@ -1,24 +1,13 @@
 "use client";
 
 // components/sections/testimonials.tsx
-// "What our clients say": one review at a time in large type, with a row of
-// initials to switch between them. Reviews change automatically (a thin line
-// under the current person shows the time) and pause while hovered or focused.
-// Content lives in data/testimonials.ts.
+// Sleek Infinite Marquee Carousel for testimonials:
+// Modern, minimalist cards continuously gliding horizontally across the screen,
+// with subtle dark-glass surfaces, pause-on-hover, and fade-out gradient edges.
 
-import { useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { CheckCircle2, Quote } from "lucide-react";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Reveal } from "@/components/ui/animated-section";
-import { testimonials } from "@/data/testimonials";
-import { cn } from "@/lib/utils";
-
-/** Seconds each review stays on screen */
-const ROTATE_SECONDS = 7;
-
-/** Large quiet quote marks that sit inline with the text without making lines taller */
-const quoteMark =
-  "relative top-[0.36em] mx-1.5 font-heading text-[2.2em] leading-[0] font-semibold text-text-dim select-none";
+import { testimonials, type Testimonial } from "@/data/testimonials";
 
 function initials(name: string) {
   return name
@@ -30,112 +19,80 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+function TestimonialCard({ t }: { t: Testimonial }) {
+  return (
+    <div className="group card-surface relative flex h-[260px] w-[340px] shrink-0 flex-col justify-between rounded-2xl border border-border/70 bg-card/60 p-7 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card sm:h-[270px] sm:w-[400px] sm:p-8">
+      <div>
+        <div className="flex items-center justify-between">
+          <Quote className="size-6 text-primary-light/40 transition-colors duration-300 group-hover:text-primary-light" />
+          <span className="flex items-center gap-1 font-mono text-[11px] font-medium text-accent">
+            <CheckCircle2 className="size-3.5" />
+            Verified
+          </span>
+        </div>
+
+        <p className="mt-4 line-clamp-4 text-[14.5px] leading-relaxed text-text-muted transition-colors duration-200 group-hover:text-text sm:text-[15px]">
+          &ldquo;{t.quote}&rdquo;
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3.5 border-t border-border/50 pt-4">
+        <div className="grid size-9 place-items-center rounded-full bg-primary/10 font-heading text-xs font-bold text-primary-light ring-1 ring-primary/20 transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
+          {initials(t.name)}
+        </div>
+        <div className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-text">{t.name}</span>
+          {t.role && (
+            <span className="block truncate font-mono text-[11px] text-text-dim">{t.role}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Testimonials() {
-  const [active, setActive] = useState(0);
-  const reduce = useReducedMotion();
-
-  function handleTimerEnd(event: React.AnimationEvent<HTMLSpanElement>) {
-    // Ignore instant "ends" (e.g. when animations are switched off by the system)
-    if (event.elapsedTime < 1) return;
-    setActive((i) => (i + 1) % testimonials.length);
-  }
-
   return (
     <section
       id="testimonials"
       aria-labelledby="testimonials-title"
-      className="section-y relative bg-bg-soft"
+      className="section-y relative overflow-hidden bg-bg-soft/50"
     >
-      <div className="container-page">
+      <div className="container-page mb-12 sm:mb-16">
         <SectionHeader
           id="testimonials-title"
-          pill="Client testimonials"
+          pill="Client Stories"
           title={
             <>
-              What our clients say
+              Trusted by businesses, <span className="text-primary-ink">proven by results</span>
             </>
           }
+          description="What founders and business leaders say about working with Inwaits."
         />
+      </div>
 
-        <Reveal className="group mx-auto mt-12 max-w-4xl text-center md:mt-16">
-          {/* All reviews share one grid cell, so the height never jumps */}
-          <div className="grid">
-            {testimonials.map((t, i) => {
-              const isActive = i === active;
-              return (
-                <figure
-                  key={t.name}
-                  aria-hidden={!isActive}
-                  className={cn(
-                    "self-center transition-[opacity,transform,visibility] ease-out [grid-area:1/1]",
-                    isActive
-                      ? "visible translate-y-0 opacity-100 delay-150 duration-300"
-                      : "invisible translate-y-2 opacity-0 duration-150",
-                  )}
-                >
-                  <blockquote className="text-xl leading-relaxed font-medium tracking-[-0.01em] text-balance text-text sm:text-2xl md:text-[1.9rem] md:leading-[1.45]">
-                    {/* Big quote marks before the first word and after the last word */}
-                    <span aria-hidden="true" className={quoteMark}>
-                      &ldquo;
-                    </span>
-                    {t.quote}
-                    <span aria-hidden="true" className={quoteMark}>
-                      &rdquo;
-                    </span>
-                  </blockquote>
-                  <figcaption className="mt-8 text-sm sm:text-base">
-                    <span className="font-semibold text-text">{t.name}</span>
-                    {t.role && <span className="text-text-muted"> · {t.role}</span>}
-                  </figcaption>
-                </figure>
-              );
-            })}
-          </div>
-
-          {/* People: pick a review */}
-          <div
-            role="group"
-            aria-label="Choose a review"
-            className="mt-12 flex justify-center gap-3 sm:gap-4"
-          >
-            {testimonials.map((t, i) => {
-              const isActive = i === active;
-              return (
-                <button
-                  key={t.name}
-                  type="button"
-                  onClick={() => setActive(i)}
-                  aria-label={`Show review from ${t.name}`}
-                  aria-pressed={isActive}
-                  className="flex flex-col items-center gap-3 rounded-xl p-1"
-                >
-                  <span
-                    className={cn(
-                      "grid size-11 place-items-center rounded-full font-heading text-sm font-semibold transition-colors duration-150 ease-out sm:size-12",
-                      isActive
-                        ? "bg-primary text-white"
-                        : "bg-white/[0.04] text-text-muted ring-1 ring-border hover:text-text hover:ring-border-strong",
-                    )}
-                  >
-                    {initials(t.name)}
-                  </span>
-                  <span className="relative h-0.5 w-8 overflow-hidden rounded-full bg-border">
-                    {isActive &&
-                      (reduce ? (
-                        <span className="absolute inset-0 bg-primary-light" />
-                      ) : (
-                        <span
-                          onAnimationEnd={handleTimerEnd}
-                          style={{ animationDuration: `${ROTATE_SECONDS}s` }}
-                          className="absolute inset-0 origin-left animate-progress bg-primary-light group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused]"
-                        />
-                      ))}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </Reveal>
+      {/* Infinite gliding marquee with soft edge fades */}
+      <div className="group/track relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
+        <div
+          style={{ "--marquee-duration": "32s" } as React.CSSProperties}
+          className="flex w-max gap-5 py-3 animate-marquee group-hover/track:[animation-play-state:paused]"
+        >
+          <ul className="flex shrink-0 items-center gap-5">
+            {testimonials.map((t) => (
+              <li key={t.name}>
+                <TestimonialCard t={t} />
+              </li>
+            ))}
+          </ul>
+          {/* Seamless duplicate copy for infinite glide */}
+          <ul aria-hidden="true" className="flex shrink-0 items-center gap-5">
+            {testimonials.map((t) => (
+              <li key={`${t.name}-dup`}>
+                <TestimonialCard t={t} />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
