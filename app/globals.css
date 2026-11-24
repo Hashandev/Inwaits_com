@@ -101,6 +101,7 @@
 
   /* Animations */
   --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 40s) linear infinite;
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-progress: progress-fill 7s linear forwards;
 
@@ -110,6 +111,14 @@
     }
     to {
       transform: translateX(calc(-50% - var(--marquee-gap, 0px) / 2));
+    }
+  }
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(calc(-50% - var(--marquee-gap, 0px) / 2));
+    }
+    to {
+      transform: translateX(0);
     }
   }
   @keyframes progress-fill {
