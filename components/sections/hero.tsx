@@ -1,35 +1,19 @@
 "use client";
 
 // components/sections/hero.tsx
-// Home page hero with blue ambient glow and interactive cursor-tracked glowing grid squares.
+// Home page hero with blue ambient glow, background grid, and interactive 3D particle dot wave.
 
-import { useState, useCallback } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
+import { DotWaveCanvas } from "@/components/ui/dot-wave-canvas";
 import { hero } from "@/data/hero";
 
 export function Hero() {
-  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setMousePos(null);
-  }, []);
-
   return (
     <section
       aria-labelledby="hero-title"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className="relative flex min-h-[92svh] items-center pt-28 pb-36 md:pt-36 md:pb-44 overflow-hidden"
     >
       {/* Background Glow & Grid Design */}
@@ -40,24 +24,11 @@ export function Hero() {
         {/* Soft radial blue ambient glow */}
         <div className="absolute -top-32 left-1/2 -z-10 h-[850px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_70%_at_50%_30%,rgba(21,48,255,0.48)_0%,rgba(21,48,255,0.15)_50%,transparent_80%)]" />
 
-        {/* Base delicate grid overlay: seamlessly covers entire hero area with elegant fade to bottom */}
+        {/* Base delicate grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
 
-        {/* Interactive Mouse Hover Highlight: illuminates grid squares under cursor */}
-        {mousePos && (
-          <div
-            className="pointer-events-none absolute inset-0 transition-opacity duration-300"
-            style={{
-              background: `radial-gradient(340px circle at ${mousePos.x}px ${mousePos.y}px, rgba(21,48,255,0.25), transparent 80%),
-                           radial-gradient(190px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent 60%)`,
-              maskImage: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
-              WebkitMaskImage: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
-            }}
-          >
-            {/* Bright grid lines & squares that pop under cursor */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.30)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.30)_1px,transparent_1px)] bg-[size:60px_60px]" />
-          </div>
-        )}
+        {/* Interactive 3D Dot Wave Canvas (from etechamila.lk style with mouse deflection) */}
+        <DotWaveCanvas rgbColor="90, 115, 255" />
 
         {/* Bottom smooth fade to merge hero into the next section */}
         <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
