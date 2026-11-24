@@ -1,7 +1,8 @@
 "use client";
 
 // components/sections/hero.tsx
-// Home page hero with blue ambient glow and 3D perspective curved grid with interactive mouse hover zoom.
+// Home page hero with premium 3D holographic grid floor, blue ambient glow,
+// and interactive mouse hover effects.
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -14,24 +15,28 @@ export function Hero() {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative flex min-h-[92svh] items-center pt-28 pb-36 md:pt-36 md:pb-44 overflow-hidden"
+      className="relative flex min-h-[100svh] items-center justify-center overflow-hidden"
     >
-      {/* Background Glow & 3D Curved Perspective Grid */}
+      {/* ── Background layers ── */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        {/* Soft radial blue ambient glow focused at the top */}
-        <div className="absolute -top-32 left-1/2 -z-10 h-[720px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_65%_at_50%_25%,rgba(21,48,255,0.45)_0%,rgba(21,48,255,0.12)_45%,transparent_75%)]" />
+        {/* Top radial glow — rich blue ambiance */}
+        <div className="absolute -top-24 left-1/2 h-[800px] w-full max-w-[100rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_60%_at_50%_20%,rgba(21,48,255,0.38)_0%,rgba(21,48,255,0.10)_50%,transparent_80%)]" />
 
-        {/* 3D Perspective Swooping Grid that curves under the headline and buttons */}
+        {/* Secondary subtle glow for more depth */}
+        <div className="absolute top-1/3 left-1/2 h-[500px] w-[600px] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle_at_center,rgba(21,48,255,0.08)_0%,transparent_70%)]" />
+
+        {/* 3D Perspective Grid Floor */}
         <PerspectiveCurveGrid />
 
-        {/* Deep dark fade under the buttons exactly matching your reference photo */}
-        <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-bg via-bg/90 to-transparent pointer-events-none" />
+        {/* Bottom dark fade */}
+        <div className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-bg via-bg/80 to-transparent" />
       </div>
 
-      <div className="container-page flex flex-col items-center text-center">
+      {/* ── Content ── */}
+      <div className="container-page relative z-10 flex flex-col items-center pt-24 pb-32 text-center md:pt-28 md:pb-40">
         <div className="animate-fade-up">
           <Pill>{hero.pill}</Pill>
         </div>

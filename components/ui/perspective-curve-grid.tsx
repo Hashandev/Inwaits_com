@@ -1,42 +1,50 @@
 "use client";
 
 // components/ui/perspective-curve-grid.tsx
-// Exact matching 3D perspective curved grid as shown in the screenshot:
-// - Swooping U-shaped curved grid plane that rises on the left and right sides
-// - Descends in the center under the headline and buttons
-// - Interactive mouse hover: grid vertices deflect and squares zoom in/illuminate
+// Full-screen dot-field covering the entire hero background.
+// - Dots fill the whole area in a uniform grid
+// - Near (bottom) dots are bright & big, far (top) dots are dim & tiny
+// - Mouse hover: dots ripple outward, enlarge, and glow
+// - Ambient floating wave animation
 
 import { useEffect, useRef } from "react";
 
-const ROWS = 18;
-const COLS = 42;
-const DISPLACE_RADIUS = 190;
-const DISPLACE_FORCE = 22;
-const ZOOM_FACTOR = 1.5;
+/* ───── tunables ───── */
+const SPACING = 28;          // px between dots
+const HOVER_RADIUS = 200;
+const RIPPLE_FORCE = 30;
+const MAX_DOT_SCALE = 3.5;
+
+// Dot sizing
+const DOT_MIN = 0.4;
+const DOT_MAX = 3.8;
+
+// Brand blue
+const BR = 21;
+const BG = 48;
+const BB = 255;
 
 export function PerspectiveCurveGrid() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
-
-    const mouse = {
-      x: -1000,
-      y: -1000,
-      targetX: -1000,
-      targetY: -1000,
-      strength: 0,
-      targetStrength: 0,
-    };
 
     let width = 0;
     let height = 0;
-    let animId: number | null = null;
     let time = 0;
+    let cols = 0;
+    let rows = 0;
+
+    const mouse = {
+      x: -9999, y: -9999,
+      tx: -9999, ty: -9999,
+      str: 0, tStr: 0,
+    };
 
     function resize() {
       if (!canvas) return;
@@ -45,158 +53,151 @@ export function PerspectiveCurveGrid() {
       height = canvas.clientHeight;
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
-      ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function getCurvedPoint(colFrac: number, rowFrac: number) {
-      // Perspective depth foreshortening
-      const rowPow = Math.pow(rowFrac, 1.45);
-
-      // Horizontal span: fans out wider toward the foreground
-      const xSpread = 0.05 + 0.9 * colFrac;
-      const xNearSpread = -0.15 + 1.3 * colFrac;
-      const px = (xSpread + (xNearSpread - xSpread) * rowPow) * width;
-
-      // The signature U-shaped curve from screenshot:
-      // Center (colFrac ≈ 0.5) sags down, while left (0) and right (1) arch upwards
-      const uCurve = Math.pow(Math.abs(colFrac - 0.5) * 2, 2.2);
-
-      // Vertical position:
-      // Horizon (far) starts around 38% height
-      // Base (near) reaches around 88% height in center
-      const farY = (0.32 - uCurve * 0.12) * height;
-      const nearY = (0.86 - uCurve * 0.16) * height;
-
-      // Gentle ambient floating wave
-      const floatWave = Math.sin(time + colFrac * 3.5 + rowFrac * 2) * 6;
-
-      const py = farY + (nearY - farY) * rowPow + floatWave;
-
-      // Alpha mask: vibrant in center-bottom, fading gracefully at the far horizon and outer edges
-      const edgeFade = Math.sin(Math.PI * colFrac);
-      const alpha = Math.max(0, Math.min(1, Math.pow(edgeFade, 0.6) * (0.15 + 0.85 * rowFrac)));
-
-      return { x: px, y: py, alpha };
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.ceil(width / SPACING) + 2;
+      rows = Math.ceil(height / SPACING) + 2;
     }
 
     function draw() {
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
-      time += 0.015;
+      time += 0.008;
 
-      // Mouse lerp
-      mouse.x += (mouse.targetX - mouse.x) * 0.16;
-      mouse.y += (mouse.targetY - mouse.y) * 0.16;
-      mouse.strength += (mouse.targetStrength - mouse.strength) * 0.1;
+      // Smooth mouse follow
+      mouse.x += (mouse.tx - mouse.x) * 0.12;
+      mouse.y += (mouse.ty - mouse.y) * 0.12;
+      mouse.str += (mouse.tStr - mouse.str) * 0.08;
 
-      // Calculate deformed grid points
-      const grid: { x: number; y: number; alpha: number; hoverZoom: number }[][] = [];
+      const offsetX = (width - (cols - 1) * SPACING) * 0.5;
+      const offsetY = (height - (rows - 1) * SPACING) * 0.5;
 
-      for (let r = 0; r < ROWS; r++) {
-        const rowFrac = r / (ROWS - 1);
-        grid[r] = [];
+      for (let r = 0; r < rows; r++) {
+        const fy = r / (rows - 1); // 0=top (far), 1=bottom (near)
 
-        for (let c = 0; c < COLS; c++) {
-          const colFrac = c / (COLS - 1);
-          const pt = getCurvedPoint(colFrac, rowFrac);
+        for (let c = 0; c < cols; c++) {
+          const fx = c / (cols - 1); // 0=left, 1=right
 
-          let px = pt.x;
-          let py = pt.y;
-          let palpha = pt.alpha;
-          let hoverZoom = 1;
+          // Base position: uniform grid
+          let px = offsetX + c * SPACING;
+          let py = offsetY + r * SPACING;
 
+          // Ambient wave
+          const wave =
+            Math.sin(time + fx * 6 + fy * 4) * 2.5 +
+            Math.cos(time * 0.6 + fx * 3 - fy * 5) * 1.5;
+          px += wave * 0.6;
+          py += wave;
+
+          // Depth: top=far(dim), bottom=near(bright)
+          const depthAlpha = Math.pow(fy, 2.2);
+          // Edge fade (soft at left/right edges)
+          const edgeFade = Math.pow(Math.sin(Math.PI * fx), 0.4);
+          let dotAlpha = edgeFade * (0.02 + 0.98 * depthAlpha);
+
+          // Dot size: tiny at top, big at bottom
+          let dotRadius = DOT_MIN + (DOT_MAX - DOT_MIN) * Math.pow(fy, 2.5);
+
+          // ── Mouse interaction ──
           const dx = px - mouse.x;
           const dy = py - mouse.y;
           const dist = Math.hypot(dx, dy);
+          let hoverIntensity = 0;
 
-          // Interactive mouse hover zoom & deflection
-          if (mouse.strength > 0 && dist < DISPLACE_RADIUS) {
-            const factor = mouse.strength * Math.pow(1 - dist / DISPLACE_RADIUS, 1.8);
-            if (dist > 0) {
-              px += (dx / dist) * DISPLACE_FORCE * factor;
-              py += (dy / dist) * DISPLACE_FORCE * factor;
+          if (mouse.str > 0 && dist < HOVER_RADIUS) {
+            const t = 1 - dist / HOVER_RADIUS;
+            const factor = mouse.str * Math.pow(t, 1.5);
+            hoverIntensity = factor;
+
+            // Push dots outward
+            if (dist > 1) {
+              px += (dx / dist) * RIPPLE_FORCE * factor;
+              py += (dy / dist) * RIPPLE_FORCE * factor;
             }
-            hoverZoom = 1 + ZOOM_FACTOR * factor;
-            palpha += (1 - palpha) * factor;
+
+            // Scale up
+            dotRadius *= 1 + (MAX_DOT_SCALE - 1) * factor;
+
+            // Brighten
+            dotAlpha = dotAlpha + (1 - dotAlpha) * factor * 0.9;
           }
 
-          grid[r][c] = { x: px, y: py, alpha: palpha, hoverZoom };
-        }
-      }
+          if (dotAlpha < 0.015) continue;
 
-      // Render perspective curved quads/squares
-      for (let r = 0; r < ROWS - 1; r++) {
-        for (let c = 0; c < COLS - 1; c++) {
-          const p1 = grid[r][c];
-          const p2 = grid[r][c + 1];
-          const p3 = grid[r + 1][c + 1];
-          const p4 = grid[r + 1][c];
+          // ── Glow halo ──
+          if (hoverIntensity > 0.05) {
+            const glowR = dotRadius * (2.5 + hoverIntensity * 2);
+            const glowAlpha = dotAlpha * (0.06 + hoverIntensity * 0.2);
+            const grd = ctx.createRadialGradient(px, py, 0, px, py, glowR);
+            grd.addColorStop(0, `rgba(${BR}, ${BG}, ${BB}, ${glowAlpha.toFixed(3)})`);
+            grd.addColorStop(1, `rgba(${BR}, ${BG}, ${BB}, 0)`);
+            ctx.fillStyle = grd;
+            ctx.fillRect(px - glowR, py - glowR, glowR * 2, glowR * 2);
+          }
 
-          const avgAlpha = (p1.alpha + p2.alpha + p3.alpha + p4.alpha) / 4;
-          const maxZoom = Math.max(p1.hoverZoom, p2.hoverZoom, p3.hoverZoom, p4.hoverZoom);
-
-          if (avgAlpha < 0.02) continue;
-
+          // ── Core dot ──
           ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.lineTo(p3.x, p3.y);
-          ctx.lineTo(p4.x, p4.y);
-          ctx.closePath();
+          ctx.arc(px, py, dotRadius, 0, Math.PI * 2);
 
-          // Clean white highlight under cursor (no blue color)
-          if (maxZoom > 1.06) {
-            const strokeAlpha = Math.min(0.95, avgAlpha * (1.2 + (maxZoom - 1) * 2.2));
-            ctx.strokeStyle = `rgba(255, 255, 255, ${strokeAlpha.toFixed(3)})`;
-            ctx.lineWidth = 1.4;
-          } else {
-            // Resting clean white grid lines
-            const strokeAlpha = Math.max(0.04, Math.min(0.35, avgAlpha * 0.38));
-            ctx.strokeStyle = `rgba(255, 255, 255, ${strokeAlpha.toFixed(3)})`;
-            ctx.lineWidth = 0.9;
-          }
+          // Color: brand blue → white-blue on hover
+          const wb = hoverIntensity * 0.55;
+          const cr = Math.round(BR + (255 - BR) * wb);
+          const cg = Math.round(BG + (255 - BG) * wb);
+          const cb = Math.round(BB + (255 - BB) * wb);
 
-          ctx.stroke();
+          ctx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, ${dotAlpha.toFixed(3)})`;
+          ctx.fill();
         }
       }
 
-      animId = requestAnimationFrame(draw);
+      // ── Hover spotlight ──
+      if (mouse.str > 0.02) {
+        const spotR = HOVER_RADIUS * 1.5;
+        const spotAlpha = mouse.str * 0.08;
+        const spot = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, spotR);
+        spot.addColorStop(0, `rgba(${BR}, ${BG}, ${BB}, ${spotAlpha.toFixed(3)})`);
+        spot.addColorStop(0.5, `rgba(${BR}, ${BG}, ${BB}, ${(spotAlpha * 0.3).toFixed(3)})`);
+        spot.addColorStop(1, "transparent");
+        ctx.fillStyle = spot;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      rafRef.current = requestAnimationFrame(draw);
     }
 
     resize();
-    animId = requestAnimationFrame(draw);
+    rafRef.current = requestAnimationFrame(draw);
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
+    const obs = new ResizeObserver(resize);
+    obs.observe(canvas);
 
-    const heroSection = canvas.closest("section") || canvas.parentElement;
+    const heroEl = canvas.closest("section") || canvas.parentElement;
 
-    const onPointerMove = (e: PointerEvent) => {
+    const onMove = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
-      mouse.targetX = e.clientX - rect.left;
-      mouse.targetY = e.clientY - rect.top;
-      mouse.targetStrength = 1;
+      mouse.tx = e.clientX - rect.left;
+      mouse.ty = e.clientY - rect.top;
+      mouse.tStr = 1;
     };
 
-    const onPointerLeave = () => {
-      mouse.targetStrength = 0;
-      mouse.targetX = -1000;
-      mouse.targetY = -1000;
+    const onLeave = () => {
+      mouse.tStr = 0;
+      mouse.tx = -9999;
+      mouse.ty = -9999;
     };
 
-    if (heroSection) {
-      heroSection.addEventListener("pointermove", onPointerMove as EventListener);
-      heroSection.addEventListener("pointerleave", onPointerLeave as EventListener);
-      window.addEventListener("scroll", onPointerLeave, { passive: true });
+    if (heroEl) {
+      heroEl.addEventListener("pointermove", onMove as EventListener);
+      heroEl.addEventListener("pointerleave", onLeave as EventListener);
+      window.addEventListener("scroll", onLeave, { passive: true });
     }
 
     return () => {
-      if (animId) cancelAnimationFrame(animId);
-      resizeObserver.disconnect();
-      if (heroSection) {
-        heroSection.removeEventListener("pointermove", onPointerMove as EventListener);
-        heroSection.removeEventListener("pointerleave", onPointerLeave as EventListener);
-        window.removeEventListener("scroll", onPointerLeave);
+      cancelAnimationFrame(rafRef.current);
+      obs.disconnect();
+      if (heroEl) {
+        heroEl.removeEventListener("pointermove", onMove as EventListener);
+        heroEl.removeEventListener("pointerleave", onLeave as EventListener);
+        window.removeEventListener("scroll", onLeave);
       }
     };
   }, []);
@@ -204,7 +205,7 @@ export function PerspectiveCurveGrid() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]"
+      className="pointer-events-none absolute inset-0 size-full"
     />
   );
 }
