@@ -139,7 +139,7 @@ export function InteractiveGrid() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]"
+      className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_bottom,black_50%,rgba(0,0,0,0.5)_65%,transparent_85%)]"
     />
   );
 }

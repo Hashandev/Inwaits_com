@@ -21,14 +21,14 @@ export function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        {/* Soft radial blue ambient glow */}
-        <div className="absolute -top-32 left-1/2 -z-10 h-[850px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_70%_at_50%_30%,rgba(21,48,255,0.48)_0%,rgba(21,48,255,0.15)_50%,transparent_80%)]" />
+        {/* Soft radial blue ambient glow focused at the top */}
+        <div className="absolute -top-32 left-1/2 -z-10 h-[680px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_75%_60%_at_50%_20%,rgba(21,48,255,0.45)_0%,rgba(21,48,255,0.12)_45%,transparent_75%)]" />
 
         {/* Interactive Squares Grid: lights up & ripples on mouse hover */}
         <InteractiveGrid />
 
-        {/* Bottom smooth fade to merge hero into the next section */}
-        <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
+        {/* Deep dark fade under the buttons exactly matching your reference photo */}
+        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-bg via-bg/95 to-transparent pointer-events-none" />
       </div>
 
       <div className="container-page flex flex-col items-center text-center">
