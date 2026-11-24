@@ -1,6 +1,9 @@
-// components/sections/hero.tsx
-// Home page hero with blue ambient glow, background grid and trust badges.
+"use client";
 
+// components/sections/hero.tsx
+// Home page hero with blue ambient glow and interactive cursor-tracked glowing grid squares.
+
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,9 +11,25 @@ import { Pill } from "@/components/ui/pill";
 import { hero } from "@/data/hero";
 
 export function Hero() {
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setMousePos(null);
+  }, []);
+
   return (
     <section
       aria-labelledby="hero-title"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       className="relative flex min-h-[90svh] items-center pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden"
     >
       {/* Background Glow & Grid Design */}
@@ -21,8 +40,24 @@ export function Hero() {
         {/* Soft radial blue glow */}
         <div className="absolute -top-24 left-1/2 -z-10 h-[720px] w-full max-w-[90rem] -translate-x-1/2 bg-[radial-gradient(ellipse_75%_65%_at_50%_20%,rgba(21,48,255,0.42)_0%,rgba(21,48,255,0.12)_45%,transparent_75%)]" />
 
-        {/* Delicate grid overlay with radial fade */}
+        {/* Base delicate grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_80%_65%_at_50%_25%,#000_20%,transparent_80%)]" />
+
+        {/* Interactive Mouse Hover Highlight: illuminates grid squares under cursor */}
+        {mousePos && (
+          <div
+            className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+            style={{
+              background: `radial-gradient(320px circle at ${mousePos.x}px ${mousePos.y}px, rgba(21,48,255,0.22), transparent 80%),
+                           radial-gradient(180px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.14), transparent 60%)`,
+              maskImage: `radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
+              WebkitMaskImage: `radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
+            }}
+          >
+            {/* Bright grid lines & squares that pop under cursor */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.25)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.25)_1px,transparent_1px)] bg-[size:48px_48px]" />
+          </div>
+        )}
       </div>
 
       <div className="container-page flex flex-col items-center text-center">
