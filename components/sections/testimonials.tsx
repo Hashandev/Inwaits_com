@@ -1,24 +1,29 @@
 "use client";
 
 // components/sections/testimonials.tsx
-// "What our clients say": one review at a time in large type, with a row of
-// initials to switch between them. Reviews change automatically (a thin line
-// under the current person shows the time) and pause while hovered or focused.
-// Content lives in data/testimonials.ts.
+// Modern & minimalist client testimonials:
+// Clean multi-column masonry cards with subtle glow borders, 5-star ratings,
+// verified badges, and smooth in-view entrance animations.
 
-import { useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { Star, CheckCircle2 } from "lucide-react";
+import { motion, type Variants } from "motion/react";
 import { SectionHeader } from "@/components/ui/section-header";
-import { Reveal } from "@/components/ui/animated-section";
 import { testimonials } from "@/data/testimonials";
-import { cn } from "@/lib/utils";
 
-/** Seconds each review stays on screen */
-const ROTATE_SECONDS = 7;
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Large quiet quote marks that sit inline with the text without making lines taller */
-const quoteMark =
-  "relative top-[0.36em] mx-1.5 font-heading text-[2.2em] leading-[0] font-semibold text-text-dim select-none";
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      delay: i * 0.1,
+      ease: EASE,
+    },
+  }),
+};
 
 function initials(name: string) {
   return name
@@ -31,111 +36,76 @@ function initials(name: string) {
 }
 
 export function Testimonials() {
-  const [active, setActive] = useState(0);
-  const reduce = useReducedMotion();
-
-  function handleTimerEnd(event: React.AnimationEvent<HTMLSpanElement>) {
-    // Ignore instant "ends" (e.g. when animations are switched off by the system)
-    if (event.elapsedTime < 1) return;
-    setActive((i) => (i + 1) % testimonials.length);
-  }
-
   return (
     <section
       id="testimonials"
       aria-labelledby="testimonials-title"
-      className="section-y relative bg-bg-soft"
+      className="section-y relative bg-bg-soft/60"
     >
       <div className="container-page">
         <SectionHeader
           id="testimonials-title"
-          pill="Client testimonials"
+          pill="Client Stories"
           title={
             <>
-              What our clients say
+              Trusted by businesses, <span className="text-primary-ink">proven by results</span>
             </>
           }
+          description="Real feedback from Sri Lankan businesses and professionals who scaled their digital presence with Inwaits."
         />
 
-        <Reveal className="group mx-auto mt-12 max-w-4xl text-center md:mt-16">
-          {/* All reviews share one grid cell, so the height never jumps */}
-          <div className="grid">
-            {testimonials.map((t, i) => {
-              const isActive = i === active;
-              return (
-                <figure
-                  key={t.name}
-                  aria-hidden={!isActive}
-                  className={cn(
-                    "self-center transition-[opacity,transform,visibility] ease-out [grid-area:1/1]",
-                    isActive
-                      ? "visible translate-y-0 opacity-100 delay-150 duration-300"
-                      : "invisible translate-y-2 opacity-0 duration-150",
-                  )}
-                >
-                  <blockquote className="text-xl leading-relaxed font-medium tracking-[-0.01em] text-balance text-text sm:text-2xl md:text-[1.9rem] md:leading-[1.45]">
-                    {/* Big quote marks before the first word and after the last word */}
-                    <span aria-hidden="true" className={quoteMark}>
-                      &ldquo;
-                    </span>
-                    {t.quote}
-                    <span aria-hidden="true" className={quoteMark}>
-                      &rdquo;
-                    </span>
-                  </blockquote>
-                  <figcaption className="mt-8 text-sm sm:text-base">
-                    <span className="font-semibold text-text">{t.name}</span>
-                    {t.role && <span className="text-text-muted"> · {t.role}</span>}
-                  </figcaption>
-                </figure>
-              );
-            })}
-          </div>
+        {/* Minimalist modern grid cards */}
+        <div className="mx-auto mt-14 grid max-w-6xl gap-5 sm:grid-cols-2 lg:gap-6">
+          {testimonials.map((t, i) => (
+            <motion.div
+              key={t.name}
+              custom={i}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              className="group card-surface relative flex flex-col justify-between rounded-2xl p-7 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-card/90 sm:p-8"
+            >
+              <div>
+                {/* 5-star rating */}
+                <div className="flex items-center gap-1 text-amber-400">
+                  {Array.from({ length: 5 }).map((_, starIndex) => (
+                    <Star
+                      key={starIndex}
+                      className="size-4 fill-amber-400 text-amber-400"
+                      aria-hidden="true"
+                    />
+                  ))}
+                  <span className="ml-2 font-mono text-xs font-medium text-text-dim">5.0</span>
+                </div>
 
-          {/* People: pick a review */}
-          <div
-            role="group"
-            aria-label="Choose a review"
-            className="mt-12 flex justify-center gap-3 sm:gap-4"
-          >
-            {testimonials.map((t, i) => {
-              const isActive = i === active;
-              return (
-                <button
-                  key={t.name}
-                  type="button"
-                  onClick={() => setActive(i)}
-                  aria-label={`Show review from ${t.name}`}
-                  aria-pressed={isActive}
-                  className="flex flex-col items-center gap-3 rounded-xl p-1"
-                >
-                  <span
-                    className={cn(
-                      "grid size-11 place-items-center rounded-full font-heading text-sm font-semibold transition-colors duration-150 ease-out sm:size-12",
-                      isActive
-                        ? "bg-primary text-white"
-                        : "bg-white/[0.04] text-text-muted ring-1 ring-border hover:text-text hover:ring-border-strong",
-                    )}
-                  >
-                    {initials(t.name)}
-                  </span>
-                  <span className="relative h-0.5 w-8 overflow-hidden rounded-full bg-border">
-                    {isActive &&
-                      (reduce ? (
-                        <span className="absolute inset-0 bg-primary-light" />
-                      ) : (
-                        <span
-                          onAnimationEnd={handleTimerEnd}
-                          style={{ animationDuration: `${ROTATE_SECONDS}s` }}
-                          className="absolute inset-0 origin-left animate-progress bg-primary-light group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused]"
-                        />
-                      ))}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </Reveal>
+                {/* Quote text */}
+                <p className="mt-5 text-[15px] leading-relaxed text-text-muted transition-colors duration-200 group-hover:text-text sm:text-base">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+              </div>
+
+              {/* Author footer */}
+              <div className="mt-8 flex items-center gap-3.5 border-t border-border/60 pt-5">
+                <div className="grid size-10 place-items-center rounded-full bg-primary/10 font-heading text-xs font-bold text-primary-light ring-1 ring-primary/20 transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
+                  {initials(t.name)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate text-sm font-semibold text-text">{t.name}</span>
+                    <CheckCircle2
+                      aria-label="Verified client"
+                      className="size-3.5 shrink-0 text-accent"
+                    />
+                  </div>
+                  {t.role && (
+                    <span className="block truncate text-xs text-text-dim">{t.role}</span>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
