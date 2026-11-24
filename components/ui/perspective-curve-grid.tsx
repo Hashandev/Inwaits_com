@@ -144,18 +144,13 @@ export function PerspectiveCurveGrid() {
           ctx.lineTo(p4.x, p4.y);
           ctx.closePath();
 
-          // Illuminated fill under cursor
+          // Clean white highlight under cursor (no blue color)
           if (maxZoom > 1.06) {
-            const fillIntensity = Math.min(0.25, (maxZoom - 1) * 0.28);
-            ctx.fillStyle = `rgba(21, 48, 255, ${fillIntensity.toFixed(3)})`;
-            ctx.fill();
-
-            // Vibrant brand blue border glow
-            const strokeAlpha = Math.min(0.9, avgAlpha * (1 + (maxZoom - 1) * 1.6));
-            ctx.strokeStyle = `rgba(100, 140, 255, ${strokeAlpha.toFixed(3)})`;
-            ctx.lineWidth = 1.35;
+            const strokeAlpha = Math.min(0.95, avgAlpha * (1.2 + (maxZoom - 1) * 2.2));
+            ctx.strokeStyle = `rgba(255, 255, 255, ${strokeAlpha.toFixed(3)})`;
+            ctx.lineWidth = 1.4;
           } else {
-            // Resting clean grid lines exactly matching screenshot
+            // Resting clean white grid lines
             const strokeAlpha = Math.max(0.04, Math.min(0.35, avgAlpha * 0.38));
             ctx.strokeStyle = `rgba(255, 255, 255, ${strokeAlpha.toFixed(3)})`;
             ctx.lineWidth = 0.9;
