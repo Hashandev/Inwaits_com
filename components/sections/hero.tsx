@@ -1,13 +1,13 @@
 "use client";
 
 // components/sections/hero.tsx
-// Home page hero with blue ambient glow, background grid, and interactive 3D particle dot wave.
+// Home page hero with blue ambient glow, interactive glowing grid squares that react on hover.
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
-import { DotWaveCanvas } from "@/components/ui/dot-wave-canvas";
+import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { hero } from "@/data/hero";
 
 export function Hero() {
@@ -16,7 +16,7 @@ export function Hero() {
       aria-labelledby="hero-title"
       className="relative flex min-h-[92svh] items-center pt-28 pb-36 md:pt-36 md:pb-44 overflow-hidden"
     >
-      {/* Background Glow & Grid Design */}
+      {/* Background Glow & Interactive Grid Squares */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
@@ -24,11 +24,8 @@ export function Hero() {
         {/* Soft radial blue ambient glow */}
         <div className="absolute -top-32 left-1/2 -z-10 h-[850px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_70%_at_50%_30%,rgba(21,48,255,0.48)_0%,rgba(21,48,255,0.15)_50%,transparent_80%)]" />
 
-        {/* Base delicate grid overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
-
-        {/* Interactive 3D Dot Wave Canvas (from etechamila.lk style with mouse deflection) */}
-        <DotWaveCanvas rgbColor="90, 115, 255" />
+        {/* Interactive Squares Grid: lights up & ripples on mouse hover */}
+        <InteractiveGrid />
 
         {/* Bottom smooth fade to merge hero into the next section */}
         <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
