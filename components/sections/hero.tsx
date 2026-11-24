@@ -1,13 +1,13 @@
 "use client";
 
 // components/sections/hero.tsx
-// Home page hero with blue ambient glow, interactive glowing grid squares that react on hover.
+// Home page hero with blue ambient glow and 3D perspective curved grid with interactive mouse hover zoom.
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
-import { InteractiveGrid } from "@/components/ui/interactive-grid";
+import { PerspectiveCurveGrid } from "@/components/ui/perspective-curve-grid";
 import { hero } from "@/data/hero";
 
 export function Hero() {
@@ -16,19 +16,19 @@ export function Hero() {
       aria-labelledby="hero-title"
       className="relative flex min-h-[92svh] items-center pt-28 pb-36 md:pt-36 md:pb-44 overflow-hidden"
     >
-      {/* Background Glow & Interactive Grid Squares */}
+      {/* Background Glow & 3D Curved Perspective Grid */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
         {/* Soft radial blue ambient glow focused at the top */}
-        <div className="absolute -top-32 left-1/2 -z-10 h-[680px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_75%_60%_at_50%_20%,rgba(21,48,255,0.45)_0%,rgba(21,48,255,0.12)_45%,transparent_75%)]" />
+        <div className="absolute -top-32 left-1/2 -z-10 h-[720px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_65%_at_50%_25%,rgba(21,48,255,0.45)_0%,rgba(21,48,255,0.12)_45%,transparent_75%)]" />
 
-        {/* Interactive Squares Grid: lights up & ripples on mouse hover */}
-        <InteractiveGrid />
+        {/* 3D Perspective Swooping Grid that curves under the headline and buttons */}
+        <PerspectiveCurveGrid />
 
         {/* Deep dark fade under the buttons exactly matching your reference photo */}
-        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-bg via-bg/95 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-bg via-bg/90 to-transparent pointer-events-none" />
       </div>
 
       <div className="container-page flex flex-col items-center text-center">
