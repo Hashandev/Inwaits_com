@@ -28,8 +28,8 @@ export function InteractiveGrid() {
     let animId: number | null = null;
     let time = 0;
 
-    const GRID_SIZE = 38; // exact compact square size from your screenshot
-    const HOVER_RADIUS = 260; // wider, softer mouse influence radius
+    const GRID_SIZE = 40; // crisper, perfectly proportioned squares matching original design
+    const HOVER_RADIUS = 200; // mouse influence radius
 
     function resize() {
       if (!canvas) return;
@@ -47,13 +47,13 @@ export function InteractiveGrid() {
       time += 0.02;
 
       // Smooth mouse lerp
-      mouse.x += (mouse.targetX - mouse.x) * 0.16;
-      mouse.y += (mouse.targetY - mouse.y) * 0.16;
+      mouse.x += (mouse.targetX - mouse.x) * 0.18;
+      mouse.y += (mouse.targetY - mouse.y) * 0.18;
 
       const cols = Math.ceil(width / GRID_SIZE) + 1;
       const rows = Math.ceil(height / GRID_SIZE) + 1;
 
-      // Draw squares with enhanced subtle glow & wave
+      // Draw squares
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const x = c * GRID_SIZE;
@@ -71,26 +71,25 @@ export function InteractiveGrid() {
             hoverStrength = Math.pow(1 - dist / HOVER_RADIUS, 1.6);
           }
 
-          // Subtle ambient wave ripple across squares
-          const ambientWave = Math.sin(time + c * 0.16 + r * 0.16) * 0.025;
+          // Ambient subtle wave ripple across squares
+          const ambientWave = Math.sin(time + c * 0.15 + r * 0.15) * 0.02;
 
-          // Crisp clean hairline border alpha
-          const borderAlpha = Math.max(0.045, Math.min(0.85, 0.06 + ambientWave + hoverStrength * 0.55));
+          // Crisp clean border alpha
+          const borderAlpha = Math.max(0.04, Math.min(0.95, 0.06 + ambientWave + hoverStrength * 0.75));
 
-          // Soft brand-blue fill when hovered
-          const fillAlpha = hoverStrength * 0.18;
+          // Highlighted square fill with vibrant brand blue
+          const fillAlpha = hoverStrength * 0.28;
 
-          // Fill highlighted square
-          if (fillAlpha > 0.008) {
-            ctx.fillStyle = `rgba(35, 75, 255, ${fillAlpha.toFixed(3)})`;
+          if (fillAlpha > 0.01) {
+            ctx.fillStyle = `rgba(21, 48, 255, ${fillAlpha.toFixed(3)})`;
             ctx.fillRect(x + 1, y + 1, GRID_SIZE - 2, GRID_SIZE - 2);
           }
 
-          // Draw square border with hairline crispness
-          ctx.strokeStyle = hoverStrength > 0.06
-            ? `rgba(100, 140, 255, ${borderAlpha.toFixed(3)})`
+          // Crisp square hairline border
+          ctx.strokeStyle = hoverStrength > 0.05
+            ? `rgba(90, 125, 255, ${borderAlpha.toFixed(3)})`
             : `rgba(255, 255, 255, ${borderAlpha.toFixed(3)})`;
-          ctx.lineWidth = 1;
+          ctx.lineWidth = hoverStrength > 0.1 ? 1.5 : 1;
           ctx.strokeRect(x, y, GRID_SIZE, GRID_SIZE);
         }
       }
@@ -139,7 +138,7 @@ export function InteractiveGrid() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_bottom,black_50%,rgba(0,0,0,0.5)_65%,transparent_85%)]"
+      className="pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]"
     />
   );
 }
