@@ -1,29 +1,13 @@
 "use client";
 
 // components/sections/testimonials.tsx
-// Modern & minimalist client testimonials:
-// Clean multi-column masonry cards with subtle glow borders, 5-star ratings,
-// verified badges, and smooth in-view entrance animations.
+// Sleek Infinite Marquee Carousel for testimonials:
+// Modern, minimalist cards continuously gliding horizontally across the screen,
+// with subtle dark-glass surfaces, pause-on-hover, and fade-out gradient edges.
 
-import { Star, CheckCircle2 } from "lucide-react";
-import { motion, type Variants } from "motion/react";
+import { CheckCircle2, Quote } from "lucide-react";
 import { SectionHeader } from "@/components/ui/section-header";
-import { testimonials } from "@/data/testimonials";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 32 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      delay: i * 0.1,
-      ease: EASE,
-    },
-  }),
-};
+import { testimonials, type Testimonial } from "@/data/testimonials";
 
 function initials(name: string) {
   return name
@@ -35,14 +19,46 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+function TestimonialCard({ t }: { t: Testimonial }) {
+  return (
+    <div className="group card-surface relative flex h-[260px] w-[340px] shrink-0 flex-col justify-between rounded-2xl border border-border/70 bg-card/60 p-7 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card sm:h-[270px] sm:w-[400px] sm:p-8">
+      <div>
+        <div className="flex items-center justify-between">
+          <Quote className="size-6 text-primary-light/40 transition-colors duration-300 group-hover:text-primary-light" />
+          <span className="flex items-center gap-1 font-mono text-[11px] font-medium text-accent">
+            <CheckCircle2 className="size-3.5" />
+            Verified
+          </span>
+        </div>
+
+        <p className="mt-4 line-clamp-4 text-[14.5px] leading-relaxed text-text-muted transition-colors duration-200 group-hover:text-text sm:text-[15px]">
+          &ldquo;{t.quote}&rdquo;
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3.5 border-t border-border/50 pt-4">
+        <div className="grid size-9 place-items-center rounded-full bg-primary/10 font-heading text-xs font-bold text-primary-light ring-1 ring-primary/20 transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
+          {initials(t.name)}
+        </div>
+        <div className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-text">{t.name}</span>
+          {t.role && (
+            <span className="block truncate font-mono text-[11px] text-text-dim">{t.role}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Testimonials() {
   return (
     <section
       id="testimonials"
       aria-labelledby="testimonials-title"
-      className="section-y relative bg-bg-soft/60"
+      className="section-y relative overflow-hidden bg-bg-soft/50"
     >
-      <div className="container-page">
+      <div className="container-page mb-12 sm:mb-16">
         <SectionHeader
           id="testimonials-title"
           pill="Client Stories"
@@ -51,60 +67,31 @@ export function Testimonials() {
               Trusted by businesses, <span className="text-primary-ink">proven by results</span>
             </>
           }
-          description="Real feedback from Sri Lankan businesses and professionals who scaled their digital presence with Inwaits."
+          description="What founders and business leaders say about working with Inwaits."
         />
+      </div>
 
-        {/* Minimalist modern grid cards */}
-        <div className="mx-auto mt-14 grid max-w-6xl gap-5 sm:grid-cols-2 lg:gap-6">
-          {testimonials.map((t, i) => (
-            <motion.div
-              key={t.name}
-              custom={i}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              className="group card-surface relative flex flex-col justify-between rounded-2xl p-7 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-card/90 sm:p-8"
-            >
-              <div>
-                {/* 5-star rating */}
-                <div className="flex items-center gap-1 text-amber-400">
-                  {Array.from({ length: 5 }).map((_, starIndex) => (
-                    <Star
-                      key={starIndex}
-                      className="size-4 fill-amber-400 text-amber-400"
-                      aria-hidden="true"
-                    />
-                  ))}
-                  <span className="ml-2 font-mono text-xs font-medium text-text-dim">5.0</span>
-                </div>
-
-                {/* Quote text */}
-                <p className="mt-5 text-[15px] leading-relaxed text-text-muted transition-colors duration-200 group-hover:text-text sm:text-base">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-              </div>
-
-              {/* Author footer */}
-              <div className="mt-8 flex items-center gap-3.5 border-t border-border/60 pt-5">
-                <div className="grid size-10 place-items-center rounded-full bg-primary/10 font-heading text-xs font-bold text-primary-light ring-1 ring-primary/20 transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
-                  {initials(t.name)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate text-sm font-semibold text-text">{t.name}</span>
-                    <CheckCircle2
-                      aria-label="Verified client"
-                      className="size-3.5 shrink-0 text-accent"
-                    />
-                  </div>
-                  {t.role && (
-                    <span className="block truncate text-xs text-text-dim">{t.role}</span>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+      {/* Infinite gliding marquee with soft edge fades */}
+      <div className="group/track relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
+        <div
+          style={{ "--marquee-duration": "32s" } as React.CSSProperties}
+          className="flex w-max gap-5 py-3 animate-marquee group-hover/track:[animation-play-state:paused]"
+        >
+          <ul className="flex shrink-0 items-center gap-5">
+            {testimonials.map((t) => (
+              <li key={t.name}>
+                <TestimonialCard t={t} />
+              </li>
+            ))}
+          </ul>
+          {/* Seamless duplicate copy for infinite glide */}
+          <ul aria-hidden="true" className="flex shrink-0 items-center gap-5">
+            {testimonials.map((t) => (
+              <li key={`${t.name}-dup`}>
+                <TestimonialCard t={t} />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
