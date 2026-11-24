@@ -41,21 +41,21 @@ export function Hero() {
         <div className="absolute -top-32 left-1/2 -z-10 h-[850px] w-full max-w-[95rem] -translate-x-1/2 bg-[radial-gradient(ellipse_80%_70%_at_50%_30%,rgba(21,48,255,0.48)_0%,rgba(21,48,255,0.15)_50%,transparent_80%)]" />
 
         {/* Base delicate grid overlay: seamlessly covers entire hero area with elegant fade to bottom */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
 
         {/* Interactive Mouse Hover Highlight: illuminates grid squares under cursor */}
         {mousePos && (
           <div
             className="pointer-events-none absolute inset-0 transition-opacity duration-300"
             style={{
-              background: `radial-gradient(320px circle at ${mousePos.x}px ${mousePos.y}px, rgba(21,48,255,0.25), transparent 80%),
-                           radial-gradient(180px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent 60%)`,
-              maskImage: `radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
-              WebkitMaskImage: `radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
+              background: `radial-gradient(340px circle at ${mousePos.x}px ${mousePos.y}px, rgba(21,48,255,0.25), transparent 80%),
+                           radial-gradient(190px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent 60%)`,
+              maskImage: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
+              WebkitMaskImage: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, black 30%, transparent 80%)`,
             }}
           >
             {/* Bright grid lines & squares that pop under cursor */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.30)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.30)_1px,transparent_1px)] bg-[size:48px_48px]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.30)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.30)_1px,transparent_1px)] bg-[size:60px_60px]" />
           </div>
         )}
 
